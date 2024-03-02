@@ -1,5 +1,5 @@
 {
-  "name": "eventemitter42",
+  "name": "@herbcaudill/eventemitter42",
   "author": "herb@devresults.com",
   "version": "0.0.1",
   "description": "Stripped-down TypeScript/ESM eventemitter",

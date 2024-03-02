@@ -51,13 +51,13 @@ const nope = new EventEmitter<{foo: string; bar: number}>() ❌
 ## Installation
 
 ```bash
-$ pnpm add eventemitter42
+$ pnpm add @herbcaudill/eventemitter42
 ```
 
 ## Usage
 
 ```js
-import { EventEmitter, eventPromise } from 'eventemitter42'
+import { EventEmitter, eventPromise } from '@herbcaudill/eventemitter42'
 
 class MyEmitter extends EventEmitter<TestEvents> {
   doSomething() {
