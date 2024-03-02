@@ -1,94 +1,77 @@
-# EventEmitter3
+# EventEmitter42
 
-[![Version npm](https://img.shields.io/npm/v/eventemitter3.svg?style=flat-square)](https://www.npmjs.com/package/eventemitter3)[![CI](https://img.shields.io/github/actions/workflow/status/primus/eventemitter3/ci.yml?branch=master&label=CI&style=flat-square)](https://github.com/primus/eventemitter3/actions?query=workflow%3ACI+branch%3Amaster)[![Coverage Status](https://img.shields.io/coveralls/primus/eventemitter3/master.svg?style=flat-square)](https://coveralls.io/r/primus/eventemitter3?branch=master)
+This is a Typescript/ESM port of [eventemitter3](https://github.com/primus/eventemitter3).
 
-[![Sauce Test Status](https://saucelabs.com/browser-matrix/eventemitter3.svg)](https://saucelabs.com/u/eventemitter3)
+The motivation behind this is that I often use a pattern of awaiting for a promisified event, and
+[neither me nor the internet](https://stackoverflow.com/questions/77814862/is-it-possible-to-strongly-type-the-return-value-of-this-function) could get strong typing on the result of that promise.
 
-EventEmitter3 is a high performance EventEmitter. It has been micro-optimized
-for various of code paths making this, one of, if not the fastest EventEmitter
-available for Node.js and browsers. The module is API compatible with the
-EventEmitter that ships by default with Node.js but there are some slight
-differences:
+```ts
+type TestEvents = {
+  foo: (payload: { bar: string }) => void
+}
 
-- Domain support has been removed.
-- We do not `throw` an error when you emit an `error` event and nobody is
-  listening.
-- The `newListener` and `removeListener` events have been removed as they
-  are useful only in some uncommon use-cases.
-- The `setMaxListeners`, `getMaxListeners`, `prependListener` and
-  `prependOnceListener` methods are not available.
-- Support for custom context for events so there is no need to use `fn.bind`.
-- The `removeListener` method removes all matching listeners, not only the
-  first.
+const testEmitter = new EventEmitter<TestEvents>()
 
-It's a drop in replacement for existing EventEmitters, but just faster. Free
-performance, who wouldn't want that? The EventEmitter is written in EcmaScript 3
-so it will work in the oldest browsers and node versions that you need to
-support.
+const { bar } = await eventPromise(testEmitter, 'foo')
+// error: Property 'bar' does not exist on type 'unknown'.
+```
+
+As a bonus this library includes that `eventPromise` function.
+
+```ts
+const { bar } = await eventPromise(testEmitter, 'foo')
+// ✅ bar is `string`
+```
+
+## Omitted features
+
+I left out some eventemitter3 features that I've never used:
+
+- Prefixed event names
+- Passing context to a listener
+- `eventNames`, `listeners` and `listenerCount` methods
+
+Event types can only be expressed as a map of function signatures:
+
+```ts
+type TestEvents = {
+  foo: (p: string) => void
+  bar: (p: number) => void
+  baz: (p: { a: boolean[]; b: boolean[] }) => void
+}
+```
 
 ## Installation
 
 ```bash
-$ npm install --save eventemitter3
-```
-
-## CDN
-
-Recommended CDN:
-
-```text
-https://unpkg.com/eventemitter3@latest/dist/eventemitter3.umd.min.js
+$ pnpm add eventemitter42
 ```
 
 ## Usage
 
-After installation the only thing you need to do is require the module:
-
 ```js
-var EventEmitter = require('eventemitter3');
-```
+import { EventEmitter } from 'eventemitter42'
 
-And you're ready to create your own EventEmitter instances. For the API
-documentation, please follow the official Node.js documentation:
+class MyEmitter extends EventEmitter<TestEvents> {
+  doSomething() {
+    this.emit('foo', 'here is a payload')
+  }
 
-http://nodejs.org/api/events.html
-
-### Contextual emits
-
-We've upgraded the API of the `EventEmitter.on`, `EventEmitter.once` and
-`EventEmitter.removeListener` to accept an extra argument which is the `context`
-or `this` value that should be set for the emitted events. This means you no
-longer have the overhead of an event that required `fn.bind` in order to get a
-custom `this` value.
-
-```js
-var EE = new EventEmitter()
-  , context = { foo: 'bar' };
-
-function emitted() {
-  console.log(this === context); // true
+  doSomethingElse() {
+    this.emit('bar', 42)
+  }
 }
 
-EE.once('event-name', emitted, context);
-EE.on('another-event', emitted, context);
-EE.removeListener('another-event', emitted, context);
+const emitter = new MyEmitter()
+
+emitter.on('foo', p => {
+  console.log(p) // 'here is a payload'
+})
+
+emitter.doSomething()
+
+setTimeout(() => emitter.doSomethingElse(), 1000)
+
+const result = await eventPromise(emitter, 'bar')
+console.log(result) // '42' (after a second)
 ```
-
-### Tests and benchmarks
-
-This module is well tested. You can run:
-
-- `npm test` to run the tests under Node.js.
-- `npm run test-browser` to run the tests in real browsers via Sauce Labs.
-
-We also have a set of benchmarks to compare EventEmitter3 with some available
-alternatives. To run the benchmarks run `npm run benchmark`.
-
-Tests and benchmarks are not included in the npm package. If you want to play
-with them you have to clone the GitHub repository.
-Note that you will have to run an additional `npm i` in the benchmarks folder
-before `npm run benchmark`.
-
-## License
-
-[MIT](LICENSE)
