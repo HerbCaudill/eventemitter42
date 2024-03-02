@@ -1,6 +1,6 @@
 # EventEmitter42
 
-This is a Typescript/ESM port of [eventemitter3](https://github.com/primus/eventemitter3).
+This is a Typescript/ESM adaptation of [eventemitter3](https://github.com/primus/eventemitter3).
 
 The motivation behind this is that I often use a pattern of awaiting for a promisified event, and
 [neither me nor the internet](https://stackoverflow.com/questions/77814862/is-it-possible-to-strongly-type-the-return-value-of-this-function) could get strong typing on the result of that promise.
@@ -23,7 +23,7 @@ const { bar } = await eventPromise(testEmitter, 'foo')
 // ✅ bar is `string`
 ```
 
-## Omitted features
+## Differences
 
 I left out some eventemitter3 features that I've never used:
 
@@ -31,14 +31,21 @@ I left out some eventemitter3 features that I've never used:
 - Passing context to a listener
 - `eventNames`, `listeners` and `listenerCount` methods
 
-Event types can only be expressed as a map of function signatures:
+With eventemitter3, you have various options for defining event listener signatures. In this
+library, event types can only be expressed as a map of function signatures:
 
 ```ts
-type TestEvents = {
+const testEmitter = new EventEmitter<{
   foo: (p: string) => void
   bar: (p: number) => void
-  baz: (p: { a: boolean[]; b: boolean[] }) => void
-}
+}>()
+
+// won't work:
+
+const no = new EventEmitter<'data'>() ❌
+const nope = new EventEmitter<{foo: string; bar: number}>() ❌
+
+
 ```
 
 ## Installation
@@ -50,7 +57,7 @@ $ pnpm add eventemitter42
 ## Usage
 
 ```js
-import { EventEmitter } from 'eventemitter42'
+import { EventEmitter, eventPromise } from 'eventemitter42'
 
 class MyEmitter extends EventEmitter<TestEvents> {
   doSomething() {

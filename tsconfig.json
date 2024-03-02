@@ -21,7 +21,4 @@
     "target": "ESNext",
     "useUnknownInCatchVariables": true
   },
-  "include": [
-    "**/*.ts"
-  ]
 }
