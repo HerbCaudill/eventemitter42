@@ -1,18 +1,18 @@
-import type { Events, ListenerEntry, EventMap, EventArg, EventListener, ListenerFn } from './types.js'
+import type { ListenerEntry, EventMap, EventArgs, EventListener, ListenerMap } from './types.js'
 
 export class EventEmitter<T extends EventMap = {}> {
-  #events = {} as Events<T>
+  #listenerMap = {} as ListenerMap<T>
   #eventsCount = 0
 
   /** Calls each of the listeners registered for a given event. */
-  emit<K extends keyof T>(event: K, arg?: EventArg<T, K>): boolean {
-    if (!this.#events[event]) return false
-    const listeners = [...this.#events[event]]
+  emit<K extends keyof T>(event: K, ...args: EventArgs<T, K>): boolean {
+    if (!this.#listenerMap[event]) return false
+    const listeners = [...this.#listenerMap[event]]
 
     for (let i = 0; i < listeners.length; i++) {
       const { once, fn } = listeners[i]
       if (once) this.removeListener(event, fn)
-      fn(arg)
+      fn(...args)
     }
     return true
   }
@@ -29,13 +29,12 @@ export class EventEmitter<T extends EventMap = {}> {
   }
 
   removeListener<K extends keyof T>(event: K, fn?: EventListener<T, K>) {
-    const listeners = this.#events[event]
+    const listeners = this.#listenerMap[event]
     if (listeners) {
       if (!fn) {
         this.removeAllListeners(event)
       } else {
         // find the listener
-
         const removals = []
         for (let i = 0; i < listeners.length; i++) {
           if (listeners[i].fn === fn) {
@@ -44,11 +43,11 @@ export class EventEmitter<T extends EventMap = {}> {
             this.#eventsCount -= 1
             if (this.#eventsCount === 0) {
               // if there are no more listeners, reset the events object
-              this.#events = {} as Events<T>
+              this.#listenerMap = {} as ListenerMap<T>
               this.#eventsCount = 0
             } else if (listeners.length === 1) {
               // if this is the last listener, remove the key
-              delete this.#events[event]
+              delete this.#listenerMap[event]
             } else {
               // remove this listener from the array
               removals.push(i)
@@ -66,30 +65,31 @@ export class EventEmitter<T extends EventMap = {}> {
 
   removeAllListeners(event?: keyof T) {
     if (event) {
-      const listeners = this.#events[event]
+      const listeners = this.#listenerMap[event]
       // just remove listeners for this event
       if (listeners) {
         this.#eventsCount -= listeners.length
         if (this.#eventsCount === 0) {
           // if there are no more listeners, reset the events object
-          this.#events = {} as Events<T>
+          this.#listenerMap = {} as ListenerMap<T>
         } else {
           // remove the key
-          delete this.#events[event]
+          delete this.#listenerMap[event]
         }
       }
     } else {
-      this.#events = {} as Events<T>
+      this.#listenerMap = {} as ListenerMap<T>
       this.#eventsCount = 0
     }
 
     return this
   }
+
   #addListener<K extends keyof T>(event: K, fn: EventListener<T, K>, once: boolean = false) {
-    const listener: ListenerEntry = { fn, once }
-    const events = this.#events[event] ?? []
+    const listener = { fn, once } as ListenerEntry<T, K>
+    const events = this.#listenerMap[event] ?? []
     events.push(listener)
-    this.#events[event] = events
+    this.#listenerMap[event] = events
     this.#eventsCount++
     return this
   }

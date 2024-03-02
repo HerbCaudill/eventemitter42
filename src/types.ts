@@ -1,23 +1,23 @@
 /**
- * Map of EE objects. An `Events` instance is a plain object whose properties are event names.
+ * A map of event names to the listeners for that event.
  */
-export type Events<T extends EventMap> = Record<keyof T, Array<ListenerEntry>>
+export type ListenerMap<T extends EventMap, K extends keyof T = keyof T> = Record<K, Array<ListenerEntry<T, K>>>
 
 /**
  * Representation of a single event listener.
  */
-export type ListenerEntry = {
+export type ListenerEntry<T extends EventMap, K extends keyof T> = {
   /** The listener function. */
-  fn: ListenerFn
+  fn: EventListener<T, K>
 
   /** Specify if the listener is a one-time listener. */
   once: boolean
 }
 
-export type ListenerFn = (arg: any) => void
+export type ListenerFn = (...args: any[]) => void
 
 export type EventMap = Record<string, ListenerFn>
 
-export type EventListener<T extends EventMap, K extends keyof T> = (arg?: Parameters<T[K]>[0]) => void
+export type EventListener<T extends EventMap, K extends keyof T> = (...args: Parameters<T[K]>) => void
 
-export type EventArg<T extends EventMap, K extends keyof T> = Parameters<EventListener<T, K>>[0]
+export type EventArgs<T extends EventMap, K extends keyof T> = Parameters<EventListener<T, K>>

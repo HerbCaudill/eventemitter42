@@ -2,9 +2,9 @@ import { describe, it, expect } from 'vitest'
 import { EventEmitter } from './EventEmitter.js'
 
 class TestEmitter extends EventEmitter<{
-  foo: (arg: string) => void
-  bar: (arg: number) => void
-  baz: (arg: boolean[]) => void
+  foo: () => void
+  bar: () => void
+  baz: (arg: string) => void
 }> {}
 
 describe('EventEmitter', () => {
@@ -37,8 +37,8 @@ describe('EventEmitter', () => {
 
     it('receives the emitted events', function () {
       const e = new TestEmitter()
-      e.on('foo', arg => expect(arg).equals('pizza'))
-      e.emit('foo', 'pizza')
+      e.on('baz', arg => expect(arg).equals('pizza'))
+      e.emit('baz', 'pizza')
     })
 
     it('emits to all event listeners', function () {
