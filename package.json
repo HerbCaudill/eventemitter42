@@ -1,7 +1,7 @@
 {
   "name": "@herbcaudill/eventemitter42",
   "author": "herb@devresults.com",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Stripped-down TypeScript/ESM eventemitter",
   "repository": "git://github.com/herbcaudill/eventemitter42.git",
   "license": "MIT",
