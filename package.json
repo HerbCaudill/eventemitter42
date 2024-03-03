@@ -1,17 +1,14 @@
 {
   "name": "@herbcaudill/eventemitter42",
   "author": "herb@devresults.com",
-  "version": "0.0.1",
+  "version": "0.2.0",
   "description": "Stripped-down TypeScript/ESM eventemitter",
   "repository": "git://github.com/herbcaudill/eventemitter42.git",
   "license": "MIT",
   "type": "module",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    }
-  },
+  "main": "./dist/index.js",
+  "exports": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "test": "vitest",
