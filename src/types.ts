@@ -16,7 +16,7 @@ export type ListenerEntry<T extends EventMap, K extends keyof T> = {
 
 export type ListenerFn = (...args: any[]) => void
 
-export type EventMap = Record<string, ListenerFn>
+export type EventMap = Record<string | symbol | number, ListenerFn>
 
 export type EventListener<T extends EventMap, K extends keyof T> = (...args: Parameters<T[K]>) => void
 
