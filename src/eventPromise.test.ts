@@ -61,31 +61,13 @@ describe('eventPromise', () => {
       doFoo() {
         setTimeout(() => this.emit('foo', { fee: 'fee', fi: [1, 2, 3] }), 5)
       }
-
-      doBar() {
-        setTimeout(() => this.emit('bar', 5, true))
-      }
-
-      doBaz() {
-        setTimeout(() => this.emit('baz'), 5)
-      }
     }
-    const testEmitter = new TestEmitter()
+    const testEmitter = new TestEmitter3()
 
-    // if there is 1 parameter, it is returned
     testEmitter.doFoo()
-    const { fee, fi } = await eventPromise(testEmitter, 'foo')
-    expectTypeOf(fee).toEqualTypeOf<string>()
-    expectTypeOf(fi).toEqualTypeOf<number[]>()
+    const payload = await eventPromise(testEmitter, 'foo')
 
-    // if there are 2+ parameters, only the first paramter is returned
-    testEmitter.doBar()
-    const fo = await eventPromise(testEmitter, 'bar')
-    expectTypeOf(fo).toEqualTypeOf<number>()
-
-    // if there are no parameters, undefined is returned
-    testEmitter.doBaz()
-    const baz = await eventPromise(testEmitter, 'baz')
-    expectTypeOf(baz).toEqualTypeOf<undefined>()
+    // works, but it gives us no type information
+    expectTypeOf(payload).toEqualTypeOf<any>()
   })
 })
