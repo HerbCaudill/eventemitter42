@@ -7,8 +7,8 @@ import { EventMap } from './types.js'
  * that if the event handler signature has more than one parameter, only the first parameter is
  * returned. If the event handler has no parameters, the promise resolves to `undefined`.
  *
- * Backwards compatible with eventemitter3, but doesn't give any type information for the payload:
- * The return type is always `any`.
+ * Works with both eventemitter3 and eventemitter42. With eventemitter3, the payload is not strongly
+ * typed: The type of the value returned is always `any`.
  */
 export const eventPromise = async <
   T extends EventMap, //
