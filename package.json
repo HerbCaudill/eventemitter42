@@ -14,9 +14,7 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
-    "test": "vitest",
-    "test:types": "tsc -p tsconfig.test.json  --noEmit",
-    "prepublishOnly": "pnpm build"
+    "test": "vitest"
   },
   "devDependencies": {
     "eventemitter3": "^5.0.1",
