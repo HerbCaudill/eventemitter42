@@ -64,7 +64,7 @@ jobs:
             echo "Is pre-release version"
             EXTRA_ARGS="$EXTRA_ARGS --dist-tag next"
           fi
-          npm publish ${VERSION} --yes --force-publish $EXTRA_ARGS
+          npm publish --yes --force-publish $EXTRA_ARGS
           echo 🎉 Published to NPM https://www.npmjs.com/package/@herbcaudill/eventemitter42/v/${VERSION}
         env:
           VERSION: ${{ needs.check_if_version_upgraded.outputs.version }}
